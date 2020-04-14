@@ -28,7 +28,8 @@ logging:
     com.dy.springboot.server.mapper: DEBUG
     root: INFO
 swagger2:
-  host: 182.92.200.44
+  host: 127.0.0.1:9090
+  #host: 182.92.200.44
 pagehelper:
   helperDialect: mysql
   reasonable: true
