@@ -2,7 +2,10 @@ package com.fzxt.controller;
 
 import cn.binarywang.wx.miniapp.bean.WxMaMessage;
 import com.alibaba.fastjson.JSONObject;
-import com.fzxt.miniapp.*;
+import com.fzxt.miniapp.AesCbcUtil;
+import com.fzxt.miniapp.Code2Session;
+import com.fzxt.miniapp.MiniAppProperties;
+import com.fzxt.miniapp.MiniAppUtils;
 import com.fzxt.model.User;
 import com.fzxt.redis.RedisUtil;
 import com.fzxt.response.Result;
@@ -18,7 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Objects;
 
 @Api(value="XcxController",tags={"微信小程序接口"})
 @RestController
@@ -94,15 +98,14 @@ public class MiniAppController {
     @ApiOperation(value="微信登录接口")
     @GetMapping("/login")
     public Result login(String code) {
-        String token = "MINIAPPLOGIN"+IDUtils.getPramaryId();
         if (StringUtils.isBlank(code)) {
             return Result.resultErr(StatusCode.CODEISNULL);
         }
-        Code2Session code2Session = restTemplate.getForObject(miniAppProperties.getLoginUrl(), Code2Session.class);
+        //获取open_id,判断用户是否存在，不存在则插入
+        Code2Session code2Session = restTemplate.getForObject(miniAppProperties.getLogUrlByCode(code), Code2Session.class);
         String openid =code2Session.getOpenid();
         User user = userService.getOneByField("miniopenId", openid);
         if(user == null){
-            AccessToken accessToken = restTemplate.getForObject(miniAppProperties.getLoginUrl(), AccessToken.class);
             user = new User();
             user.setId(IDUtils.getPramaryId());
             user.setMiniopenId(openid);
@@ -111,7 +114,8 @@ public class MiniAppController {
             userService.insert(user);
         }
         //结果放入redis
-        redisUtil.set(token,user);
+        String token = "MINIAPPLOGIN"+IDUtils.getPramaryId();
+        redisUtil.set(token,code2Session);
         return Result.resultOk(token);
     }
     /**
@@ -123,8 +127,13 @@ public class MiniAppController {
     @GetMapping("/info")
     public Result info(String token,String encryptedData, String iv) {
         User user =null;
+        //从token中获取
+        Code2Session code2Session = (Code2Session)redisUtil.get(token);
+        if (code2Session == null) {
+            return Result.resultErr(StatusCode.JWTTOKENEXPIRE);
+        }
         try{
-            String result = AesCbcUtil.decrypt(encryptedData, token, iv, "UTF-8");
+            String result = AesCbcUtil.decrypt(encryptedData, code2Session.getSession_key(), iv, "UTF-8");
             if (null != result && result.length() > 0) {
                 JSONObject userInfoJSON = JSONObject.parseObject(result);
                 user = userService.getOneByField("miniopenId", userInfoJSON.getString("openId"));

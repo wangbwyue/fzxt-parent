@@ -1,11 +1,10 @@
 package com.fzxt.config;
 
 import com.alibaba.fastjson.JSON;
-import com.fzxt.model.User;
+import com.fzxt.miniapp.Code2Session;
 import com.fzxt.redis.RedisUtil;
 import com.fzxt.response.Result;
 import com.fzxt.response.StatusCode;
-import com.github.pagehelper.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -25,9 +24,9 @@ public class MiniAppInterceptor extends HandlerInterceptorAdapter {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             try {
-                final String token = header.substring(7);
-                User user =(User)redisUtil.get(token);
-                if(user !=null){
+                final String token = header.substring(12);
+                Code2Session code2Session = (Code2Session)redisUtil.get(token);
+                if(code2Session !=null){
                     return true;
                 } else{
                     returnJson(response,Result.resultErr(StatusCode.JWTTOKENEXPIRE));

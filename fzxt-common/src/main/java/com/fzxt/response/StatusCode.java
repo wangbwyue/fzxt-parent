@@ -16,7 +16,7 @@ public enum StatusCode {
     OPENTIDERR(21002,"OpenId获取失败！"),
     JWTTOKENEXPIRE(21004,"token过期！"),
     CODEISNULL(21005,"code不能为空"),
-    ERRORDECRYPT(21005,"code不能为空"),
+    ERRORDECRYPT(21007,"解密失败"),
 
     UPLOAD_FILE_REGISTER_FAIL(22001,"上传文件在系统注册失败，请刷新页面重试！"),
     UPLOAD_FILE_REGISTER_EXIST(22002,"上传文件在系统已存在！"),

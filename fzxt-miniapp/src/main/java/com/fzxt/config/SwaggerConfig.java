@@ -1,5 +1,6 @@
 package com.fzxt.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -27,6 +28,9 @@ import java.util.List;
 @EnableSwagger2
 public class SwaggerConfig {
 
+    @Value("${swagger2.host}")
+    private String swaggerHost;
+
     @Bean
     public Docket api(){
         ParameterBuilder tokenPar = new ParameterBuilder();
@@ -34,6 +38,7 @@ public class SwaggerConfig {
         tokenPar.name("Authorization").description("令牌").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
         pars.add(tokenPar.build());
         return new Docket(DocumentationType.SWAGGER_2)
+                .host(swaggerHost)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.fzxt.controller"))
                 .paths(PathSelectors.any())

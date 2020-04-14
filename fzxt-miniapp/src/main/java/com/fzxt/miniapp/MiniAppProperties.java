@@ -35,4 +35,9 @@ public class MiniAppProperties {
 
         private String accessTokenUrl="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret;
 
+
+        public String getLogUrlByCode(String code){
+            return loginUrl.replace("JSCODE",code);
+        }
+
 }
