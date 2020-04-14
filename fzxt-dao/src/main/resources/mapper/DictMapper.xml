@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzxt.mapper.DictMapper">
+
+	<!-- 列表(分页) -->
+	<select id="list" resultType="com.fzxt.model.Dict" parameterType="com.fzxt.model.Dict">
+		select
+					a.id,
+					a.name,
+					a.code,
+					a.pid,
+					a.sort
+		from
+		fzxt_dict a
+		<where>
+			<if test="name != null and name !=''">
+				and a.name like CONCAT('%', #{name},'%')
+			</if>
+		</where>
+	</select>
+
+	<!-- 通过ID获取数据 -->
+	<select id="getById" resultType="com.fzxt.model.Dict" parameterType="String">
+		select
+				a.id,
+				a.name,
+				a.code,
+				a.pid,
+				a.sort
+		from  fzxt_dict a where id = #{id}
+	</select>
+
+	<!-- 通过ID获取数据 -->
+	<select id="getByCode" resultType="com.fzxt.model.Dict" parameterType="String">
+		select
+				a.id,
+				a.name,
+				a.code,
+				a.pid,
+				a.sort
+		from  fzxt_dict a where pid = (select b.id from fzxt_dict b where b.code =#{value})
+	</select>
+
+	<!-- 通过PID获取数据 -->
+	<select id="getByPid" resultType="com.fzxt.model.Dict" parameterType="String">
+		select
+				a.id,
+				a.name,
+				a.code,
+				a.pid,
+				a.sort
+		from  fzxt_dict a where a.pid = #{value}
+	</select>
+
+
+	<!-- 新增-->
+	<insert id="insert" parameterType="com.fzxt.model.Dict">
+		insert into fzxt_dict(
+			id,	
+			name,	
+			code,	
+			pid,	
+		    sort
+		) values (
+			#{id},	
+			#{name},	
+			#{code},	
+			#{pid},	
+		    #{sort}
+		)
+	</insert>
+	
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.fzxt.model.Dict">
+		update  fzxt_dict
+	    	 <set> 
+				<if test="id != null and id != '' ">
+					id = #{id},
+				</if>
+				<if test="name != null and name != '' ">
+					name = #{name},
+				</if>
+				<if test="code != null and code != '' ">
+					code = #{code},
+				</if>
+				<if test="pid != null and pid != '' ">
+					pid = #{pid},
+				</if>
+				<if test="sort != null and sort != '' ">
+					sort = #{sort},
+				</if>
+			</set>
+		where  id = #{id}
+	</update>
+
+
+	<!--批量删除-->
+	<delete id="deletebth">
+		delete from fzxt_dict where  id in
+		<foreach collection="array" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+
+	
+
+</mapper>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzxt.mapper.UserMapper">
+
+	<!-- 列表(分页) -->
+	<select id="list" resultType="com.fzxt.model.User" parameterType="com.fzxt.model.User">
+		select
+					a.id,
+					a.name,
+					a.nickName,
+					a.city,
+					a.avatarUrl,
+					a.province,
+					a.country,
+					a.school,
+					a.gender,
+					a.phone,
+					a.password,
+					a.wxopen_id,
+					a.miniopenId,
+					a.wbopen_id,
+					a.qqopen_id,
+					DATE_FORMAT( a.create_time,'%Y-%m-%d %H:%i:%s')  create_time
+		from
+		fzxt_user a
+		<where>
+			<if test="name != null and name !=''">
+				and  a.name like CONCAT('%', #{name},'%')
+			</if>
+		</where>
+	</select>
+
+	<!-- 通过ID获取数据 -->
+	<select id="getById" resultType="com.fzxt.model.User" parameterType="String">
+		select
+				a.id,
+				a.name,
+				a.nickName,
+				a.city,
+				a.avatarUrl,
+				a.province,
+				a.country,
+				a.school,
+				a.gender,
+				a.phone,
+				a.password,
+				a.wxopen_id,
+				a.miniopenId,
+				a.wbopen_id,
+				a.qqopen_id,
+				a.create_time
+		from  fzxt_user a where id = #{id} limit 1
+	</select>
+	<!-- 根据动态字段查询单条 -->
+	<select id="getOneByField" resultType="com.fzxt.model.User" >
+		select
+				a.id,
+				a.name,
+				a.nickName,
+				a.city,
+				a.avatarUrl,
+				a.province,
+				a.country,
+				a.school,
+				a.gender,
+				a.phone,
+				a.password,
+				a.wxopen_id,
+				a.miniopenId,
+				a.wbopen_id,
+				a.qqopen_id,
+				a.create_time
+		from  fzxt_user a where a.${field} = #{fieldvalue} limit 1
+	</select>
+	
+	<!-- 新增-->
+	<insert id="insert" parameterType="com.fzxt.model.User">
+		insert into fzxt_user(
+			id,	
+			name,	
+			nickName,	
+			city,	
+			avatarUrl,	
+			province,	
+			country,	
+			school,	
+			gender,	
+			phone,	
+			password,	
+			wxopen_id,
+			miniopenId,
+			wbopen_id,	
+			qqopen_id,	
+		    create_time
+		) values (
+			#{id},
+			#{name},
+			#{nickname},
+			#{city},
+			#{avatarurl},
+			#{province},
+			#{country},
+			#{school},
+			#{gender},
+			#{phone},
+			#{password},
+			#{wxopenId},
+			#{miniopenId},
+			#{wbopenId},
+			#{qqopenId},
+		    #{createTime}
+		)
+	</insert>
+	
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.fzxt.model.User">
+		update  fzxt_user
+		    <set>
+				<if test="id != null and id != '' ">
+					id = #{id},
+				</if>
+				<if test="name != null and name != '' ">
+					name = #{name},
+				</if>
+				<if test="nickname != null and nickname != '' ">
+					nickName = #{nickname},
+				</if>
+				<if test="city != null and city != '' ">
+					city = #{city},
+				</if>
+				<if test="avatarurl != null and avatarurl != '' ">
+					avatarUrl = #{avatarurl},
+				</if>
+				<if test="province != null and province != '' ">
+					province = #{province},
+				</if>
+				<if test="country != null and country != '' ">
+					country = #{country},
+				</if>
+				<if test="school != null and school != '' ">
+					school = #{school},
+				</if>
+				<if test="gender != null and gender != '' ">
+					gender = #{gender},
+				</if>
+				<if test="phone != null and phone != '' ">
+					phone = #{phone},
+				</if>
+				<if test="password != null and password != '' ">
+					password = #{password},
+				</if>
+
+			</set>
+		where  id = #{id}
+	</update>
+
+
+	<!--批量删除-->
+	<delete id="deletebth">
+		delete from fzxt_user where  id in
+		<foreach collection="array" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+
+	
+
+</mapper>

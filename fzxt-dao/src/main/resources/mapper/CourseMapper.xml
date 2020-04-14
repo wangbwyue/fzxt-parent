@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzxt.mapper.CourseMapper">
+
+	<!-- 列表(分页) -->
+	<select id="list" resultType="com.fzxt.model.Course" parameterType="com.fzxt.model.Course">
+		select
+					a.id,
+					a.name,
+					a.type_id,
+					a.description,
+					a.orgn_id,
+					DATE_FORMAT( a.create_time,'%Y-%m-%d %H:%i:%s')  create_time,
+					DATE_FORMAT( a.update_time,'%Y-%m-%d %H:%i:%s')  update_time
+		from
+		fzxt_course a
+		<where>
+			<if test="name != null and name !=''">
+				and  a.name like CONCAT('%', #{name},'%')
+			</if>
+		</where>
+	</select>
+
+	<!-- 通过ID获取数据 -->
+	<select id="getById" resultType="com.fzxt.model.Course" parameterType="String">
+		select
+				a.id,
+				a.name,
+				a.type_id,
+				a.description,
+				a.orgn_id,
+				a.create_time,
+				a.update_time
+		from  fzxt_course a where id = #{id}
+	</select>
+	
+	<!-- 新增-->
+	<insert id="insert" parameterType="com.fzxt.model.Course">
+		insert into fzxt_course(
+			id,	
+			name,	
+			type_id,	
+			description,	
+			orgn_id,	
+			create_time,	
+		    update_time
+		) values (
+			#{id},
+			#{name},
+			#{typeId},
+			#{description},
+			#{orgnId},
+			#{createTime},
+		    #{updateTime}
+		)
+	</insert>
+	
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.fzxt.model.Course">
+		update  fzxt_course
+		    <set>
+				<if test="id != null and id != '' ">
+					id = #{id},
+				</if>
+				<if test="name != null and name != '' ">
+					name = #{name},
+				</if>
+				<if test="typeId != null and typeId != '' ">
+					type_id = #{typeId},
+				</if>
+				<if test="description != null and description != '' ">
+					description = #{description},
+				</if>
+				<if test="orgnId != null and orgnId != '' ">
+					orgn_id = #{orgnId},
+				</if>
+			</set>
+		where  id = #{id}
+	</update>
+
+
+	<!--批量删除-->
+	<delete id="deletebth">
+		delete from fzxt_course where  id in
+		<foreach collection="array" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+
+	
+
+</mapper>

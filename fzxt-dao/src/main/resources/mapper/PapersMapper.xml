@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzxt.mapper.PapersMapper">
+
+	<!-- 热门试卷 -->
+	<select id="listhot" resultType="com.fzxt.model.Papers" parameterType="int">
+		select
+					a.id,
+					a.name,
+					a.course_type,
+					a.hot,
+					a.recommend,
+					DATE_FORMAT( a.create_time,'%Y-%m-%d %H:%i:%s')  create_time,
+					DATE_FORMAT( a.commend_time,'%Y-%m-%d %H:%i:%s')  commend_time,
+					DATE_FORMAT( a.update_time,'%Y-%m-%d %H:%i:%s')  update_time,
+					a.create_user,
+					a.views
+		from fzxt_papers a where a.hot=1 limit ${value}
+	</select>
+	<!-- 今日推荐列表 -->
+	<select id="listrecommend" resultType="com.fzxt.model.Papers" parameterType="com.fzxt.model.Papers">
+		select
+		a.id,
+		a.name,
+		a.course_type,
+		a.hot,
+		a.recommend,
+		DATE_FORMAT( a.create_time,'%Y-%m-%d %H:%i:%s')  create_time,
+		DATE_FORMAT( a.commend_time,'%Y-%m-%d %H:%i:%s')  commend_time,
+		DATE_FORMAT( a.update_time,'%Y-%m-%d %H:%i:%s')  update_time,
+		a.create_user,
+		a.views
+		from fzxt_papers a where a.recommend=1 order by commend_time desc limit ${value}
+	</select>
+	<!-- 列表(分页) -->
+	<select id="list" resultType="com.fzxt.model.Papers" parameterType="com.fzxt.model.Papers">
+		select
+		a.id,
+		a.name,
+		a.course_type,
+		a.hot,
+		a.recommend,
+		DATE_FORMAT( a.create_time,'%Y-%m-%d %H:%i:%s')  create_time,
+		DATE_FORMAT( a.commend_time,'%Y-%m-%d %H:%i:%s')  commend_time,
+		DATE_FORMAT( a.update_time,'%Y-%m-%d %H:%i:%s')  update_time,
+		a.create_user,
+		a.views
+		from
+		fzxt_papers a
+		<where>
+			<if test="name != null and name !=''">
+				and  a.name like CONCAT('%', #{name},'%')
+			</if>
+			<if test="courseType != null and courseType !=''">
+				and  a.course_type = #{courseType}
+			</if>
+		</where>
+	</select>
+
+	<!-- 通过ID获取数据 -->
+	<select id="getById" resultType="com.fzxt.model.Papers" parameterType="String">
+		select
+				a.id,
+				a.name,
+				a.course_type,
+				a.hot,
+				a.recommend,
+				a.create_time,
+				a.commend_time,
+				a.update_time,
+				a.create_user,
+				a.views
+		from  fzxt_papers a where id = #{id} limit 1
+	</select>
+	
+	<!-- 新增-->
+	<insert id="insert" parameterType="com.fzxt.model.Papers">
+		insert into fzxt_papers(
+			id,	
+			name,	
+			course_type,	
+			hot,	
+			recommend,	
+			create_time,	
+			commend_time,	
+			update_time,	
+			create_user,	
+		    views
+		) values (
+			#{id},
+			#{name},
+			#{courseType},
+			#{hot},
+			#{recommend},
+			#{createTime},
+			#{commendTime},
+			#{updateTime},
+			#{createUser},
+		    #{views}
+		)
+	</insert>
+	
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.fzxt.model.Papers">
+		update  fzxt_papers
+		    <set>
+				<if test="id != null and id != '' ">
+					id = #{id},
+				</if>
+				<if test="name != null and name != '' ">
+					name = #{name},
+				</if>
+				<if test="courseType != null and courseType != '' ">
+					course_type = #{courseType},
+				</if>
+				<if test="hot != null and hot != '' ">
+					hot = #{hot},
+				</if>
+				<if test="recommend != null and recommend != '' ">
+					recommend = #{recommend},
+				</if>
+				<if test="createUser != null and createUser != '' ">
+					create_user = #{createUser},
+				</if>
+				<if test="views != null and views != '' ">
+					views = #{views},
+				</if>
+			</set>
+		where  id = #{id}
+	</update>
+
+
+	<!--批量删除-->
+	<delete id="deletebth">
+		delete from fzxt_papers where  id in
+		<foreach collection="array" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+
+	
+
+</mapper>

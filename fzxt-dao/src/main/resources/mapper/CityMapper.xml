@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzxt.mapper.CityMapper">
+
+	<!-- 列表(分页) -->
+	<select id="list" resultType="com.fzxt.model.City" parameterType="com.fzxt.model.City">
+		select
+					a.id,
+					a.pid,
+					a.name
+		from
+		fzxt_city a
+		<where>
+			<if test="name != null and name !=''">
+				and a.name like CONCAT('%', #{name},'%')
+			</if>
+		</where>
+	</select>
+
+	<!-- 通过ID获取数据 -->
+	<select id="getById" resultType="com.fzxt.model.City" parameterType="String">
+		select
+				a.id,
+				a.pid,
+				a.name
+		from  fzxt_city a where id = #{id}
+	</select>
+	
+	<!-- 新增-->
+	<insert id="insert" parameterType="com.fzxt.model.City">
+		insert into fzxt_city(
+			id,	
+			pid,	
+		    name
+		) values (
+			#{id},	
+			#{pid},	
+		    #{name}
+		)
+	</insert>
+	
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.fzxt.model.City">
+		update  fzxt_city
+	    	 <set> 
+				<if test="id != null and id != '' ">
+					id = #{id},
+				</if>
+				<if test="pid != null and pid != '' ">
+					pid = #{pid},
+				</if>
+				<if test="name != null and name != '' ">
+					name = #{name},
+				</if>
+			</set>
+		where  id = #{id}
+	</update>
+
+
+	<!--批量删除-->
+	<delete id="deletebth">
+		delete from fzxt_city where  id in
+		<foreach collection="array" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+
+	
+
+</mapper>

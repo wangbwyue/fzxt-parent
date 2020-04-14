@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzxt.mapper.ProblemMapper">
+
+	<!-- 列表(分页) -->
+	<select id="list" resultType="com.fzxt.model.Problem" parameterType="com.fzxt.model.Problem">
+		select
+		a.id,
+		a.name,
+		a.knowledge,
+		a.rightanswer,
+		a.analysis,
+		a.handouts,
+		a.create_user,
+		DATE_FORMAT( a.create_time,'%Y-%m-%d %H:%i:%s')  create_time,
+		a.update_uer,
+		DATE_FORMAT( a.update_time,'%Y-%m-%d %H:%i:%s')  update_time,
+		a.views
+		from
+		fzxt_problem a
+		<where>
+			<if test="name != null and name !=''">
+				and  a.name like CONCAT('%', #{name},'%')
+			</if>
+		</where>
+	</select>
+
+	<!-- 通过ID获取数据 -->
+	<select id="getById" resultType="com.fzxt.model.Problem" parameterType="String">
+		select
+				a.id,
+				a.name,
+				a.knowledge,
+				a.rightanswer,
+				a.analysis,
+				a.handouts,
+				a.create_user,
+				a.create_time,
+				a.update_uer,
+				a.update_time,
+				a.views
+		from  fzxt_problem a where id = #{id} limit 1
+	</select>
+
+	<!-- 根据试卷id查找问题列表 -->
+	<select id="listBypapersId" resultType="com.fzxt.model.Problem" parameterType="String">
+		select
+		a.id,
+		a.name,
+		a.knowledge,
+		a.rightanswer,
+		a.analysis,
+		a.handouts,
+		a.create_user,
+		DATE_FORMAT( a.create_time,'%Y-%m-%d %H:%i:%s')  create_time,
+		a.update_uer,
+		DATE_FORMAT( a.update_time,'%Y-%m-%d %H:%i:%s')  update_time,
+		a.views
+		from fzxt_papers_problem pp left join fzxt_problem a on pp.problem_id = a.id
+		where pp.papers_id = #{value}
+	</select>
+	
+	<!-- 新增-->
+	<insert id="insert" parameterType="com.fzxt.model.Problem">
+		insert into fzxt_problem(
+			id,	
+			name,	
+			knowledge,	
+			rightanswer,	
+			analysis,	
+			handouts,	
+			create_user,	
+			create_time,	
+			update_uer,	
+			update_time,	
+		    views
+		) values (
+			#{id},
+			#{name},
+			#{knowledge},
+			#{rightanswer},
+			#{analysis},
+			#{handouts},
+			#{createUser},
+			#{createTime},
+			#{updateUer},
+			#{updateTime},
+		    #{views}
+		)
+	</insert>
+	
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.fzxt.model.Problem">
+		update  fzxt_problem
+		    <set>
+				<if test="id != null and id != '' ">
+					id = #{id},
+				</if>
+				<if test="name != null and name != '' ">
+					name = #{name},
+				</if>
+				<if test="knowledge != null and knowledge != '' ">
+					knowledge = #{knowledge},
+				</if>
+				<if test="rightanswer != null and rightanswer != '' ">
+					rightanswer = #{rightanswer},
+				</if>
+				<if test="analysis != null and analysis != '' ">
+					analysis = #{analysis},
+				</if>
+				<if test="handouts != null and handouts != '' ">
+					handouts = #{handouts},
+				</if>
+				<if test="createUser != null and createUser != '' ">
+					create_user = #{createUser},
+				</if>
+				<if test="updateUer != null and updateUer != '' ">
+					update_uer = #{updateUer},
+				</if>
+				<if test="views != null and views != '' ">
+					views = #{views},
+				</if>
+			</set>
+		where  id = #{id}
+	</update>
+
+
+	<!--批量删除-->
+	<delete id="deletebth">
+		delete from fzxt_problem where  id in
+		<foreach collection="array" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+
+	
+
+</mapper>
