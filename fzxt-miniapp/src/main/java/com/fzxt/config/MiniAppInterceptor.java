@@ -24,7 +24,7 @@ public class MiniAppInterceptor extends HandlerInterceptorAdapter {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             try {
-                final String token = header.substring(12);
+                final String token = header.substring(7);
                 Code2Session code2Session = (Code2Session)redisUtil.get(token);
                 if(code2Session !=null){
                     return true;

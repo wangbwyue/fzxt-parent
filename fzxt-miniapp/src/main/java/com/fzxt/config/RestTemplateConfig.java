@@ -30,6 +30,7 @@ public class RestTemplateConfig {
         messageConverters.add(new SourceHttpMessageConverter<Source>());
         messageConverters.add(new AllEncompassingFormHttpMessageConverter());
         messageConverters.add(new MappingJackson2HttpMessageConverter());
+        messageConverters.add(new WxMappingJackson2HttpMessageConverter());
         RestTemplate restTemplate = new RestTemplate(messageConverters);
         restTemplate.setRequestFactory(factory);
         return restTemplate;

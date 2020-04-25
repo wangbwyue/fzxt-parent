@@ -6,8 +6,9 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "wx.miniapp")
+@ConfigurationProperties(prefix = "wx-miniapp")
 public class MiniAppProperties {
+
 
         private String appid;
 
@@ -31,13 +32,16 @@ public class MiniAppProperties {
          */
         private String msgDataFormat;
         //登录接口获得临时登录凭证
-        private String loginUrl="https://api.weixin.qq.com/sns/jscode2session?appid="+appid+"&secret="+secret+"&js_code=JSCODE&grant_type=authorization_code";
+        private String loginUrl="https://api.weixin.qq.com/sns/jscode2session?appid=myappid&secret=mysecret&js_code=JSCODE&grant_type=authorization_code";
 
-        private String accessTokenUrl="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret;
+        private String accessTokenUrl="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=myappid&secret=mysecret";
 
 
-        public String getLogUrlByCode(String code){
-            return loginUrl.replace("JSCODE",code);
+        public String getLogUrlRest(String code){
+                return loginUrl.replace("JSCODE",code).replace("myappid",appid).replace("mysecret",secret);
+        }
+        public String getAccessTokenUrlRest(){
+                return accessTokenUrl.replace("myappid",appid).replace("mysecret",secret);
         }
 
 }

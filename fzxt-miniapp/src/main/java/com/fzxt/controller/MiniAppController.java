@@ -2,10 +2,7 @@ package com.fzxt.controller;
 
 import cn.binarywang.wx.miniapp.bean.WxMaMessage;
 import com.alibaba.fastjson.JSONObject;
-import com.fzxt.miniapp.AesCbcUtil;
-import com.fzxt.miniapp.Code2Session;
-import com.fzxt.miniapp.MiniAppProperties;
-import com.fzxt.miniapp.MiniAppUtils;
+import com.fzxt.miniapp.*;
 import com.fzxt.model.User;
 import com.fzxt.redis.RedisUtil;
 import com.fzxt.response.Result;
@@ -91,49 +88,51 @@ public class MiniAppController {
         throw new RuntimeException("不可识别的加密类型：" + encryptType);
     }
 
-    public static void main(String[] args) {
-        int i=12;
-        System.out.println(i+=i-=i*=i);
-    }
+
     @ApiOperation(value="微信登录接口")
-    @GetMapping("/login")
-    public Result login(String code) {
+    @GetMapping("/login/{code}")
+    public Result login(@PathVariable String code) {
         if (StringUtils.isBlank(code)) {
             return Result.resultErr(StatusCode.CODEISNULL);
         }
         //获取open_id,判断用户是否存在，不存在则插入
-        Code2Session code2Session = restTemplate.getForObject(miniAppProperties.getLogUrlByCode(code), Code2Session.class);
-        String openid =code2Session.getOpenid();
-        User user = userService.getOneByField("miniopenId", openid);
-        if(user == null){
-            user = new User();
-            user.setId(IDUtils.getPramaryId());
-            user.setMiniopenId(openid);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            user.setCreateTime(sdf.format(new Date()));
-            userService.insert(user);
+        Code2Session code2Session = restTemplate.getForObject(miniAppProperties.getLogUrlRest(code), Code2Session.class);
+        if(code2Session.getErrcode() == 0){
+            String openid =code2Session.getOpenid();
+            User user = userService.getOneByField("miniopenId", openid);
+            if(user == null){
+                user = new User();
+                user.setId(IDUtils.getPramaryId());
+                user.setMiniopenId(openid);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                user.setCreateTime(sdf.format(new Date()));
+                userService.insert(user);
+            }
+            //结果放入redis
+            String token = "MINIAPPLOGIN"+IDUtils.getPramaryId();
+            redisUtil.set(token,code2Session);
+            return Result.resultOk(token);
+        } else{
+            return Result.resultErr(code2Session.getErrmsg());
         }
-        //结果放入redis
-        String token = "MINIAPPLOGIN"+IDUtils.getPramaryId();
-        redisUtil.set(token,code2Session);
-        return Result.resultOk(token);
     }
-    /**
+
+     /**
      * <pre>
      * 解密获取用户信息接口
      * </pre>
      */
     @ApiOperation(value="解密获取用户信息接口")
-    @GetMapping("/info")
-    public Result info(String token,String encryptedData, String iv) {
+    @PostMapping("/info")
+    public Result info(@RequestBody UserInfoParam userInfoParam) {
         User user =null;
         //从token中获取
-        Code2Session code2Session = (Code2Session)redisUtil.get(token);
-        if (code2Session == null) {
+        Code2Session code2Session = (Code2Session)redisUtil.get(userInfoParam.getToken());
+       if (code2Session == null) {
             return Result.resultErr(StatusCode.JWTTOKENEXPIRE);
         }
         try{
-            String result = AesCbcUtil.decrypt(encryptedData, code2Session.getSession_key(), iv, "UTF-8");
+            String result = AesCbcUtil.decrypt(userInfoParam.getEncryptedData(), code2Session.getSession_key(), userInfoParam.getIv(), "UTF-8");
             if (null != result && result.length() > 0) {
                 JSONObject userInfoJSON = JSONObject.parseObject(result);
                 user = userService.getOneByField("miniopenId", userInfoJSON.getString("openId"));
@@ -144,14 +143,15 @@ public class MiniAppController {
                 user.setCountry(userInfoJSON.getString("country"));
                 user.setAvatarurl( userInfoJSON.getString("avatarUrl"));
                 userService.update(user);
+                return Result.resultOk(user);
             } else {
-                Result.resultErr(StatusCode.ERRORDECRYPT);
+                return Result.resultErr(StatusCode.ERRORDECRYPT);
             }
         } catch (Exception e){
             e.printStackTrace();
-            Result.resultErr(e.getMessage());
+            return Result.resultErr(e.getMessage());
         }
-        return Result.resultOk(user);
+
     }
 
 }

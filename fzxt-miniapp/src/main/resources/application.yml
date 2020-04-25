@@ -9,7 +9,7 @@ spring:
   redis:
     host: 182.92.200.44
     port: 6379
-    password: ''
+    password: root
     lettuce:
       pool:
         max-active: 8   #最大连接数据库连接数,设 0 为没有限制
@@ -18,7 +18,12 @@ spring:
         min-idle: 0     #最小等待连接中的数量,设 0 为没有限制
     timeout: 5000
     database: 0
-
+wx-miniapp:
+  appid: wx6ad097f204f9d5fb #微信小程序的appid
+  secret: 74503209c15e5ef2d0ac3b36f1482bf0 #微信小程序的Secret
+  token: fzxt2020wx #微信小程序消息服务器配置的token
+  aesKey: NWpIzKGJ5LwDSTPNaEFMrgVvDTwDJ22kTUPQMuVJlCB #微信小程序消息服务器配置的EncodingAESKey
+  msgDataFormat: JSON
 #指定xml存放位置 classpath表示resource下的包
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -28,17 +33,10 @@ logging:
     com.dy.springboot.server.mapper: DEBUG
     root: INFO
 swagger2:
-  host: 127.0.0.1:9090
-  #host: 182.92.200.44
+  #host: 127.0.0.1:9090
+  host: 182.92.200.44
 pagehelper:
   helperDialect: mysql
   reasonable: true
   supportMethodsArguments: true
   params: count=countSql
-wx:
-  miniapp:
-    appid: wx6ad097f204f9d5fb #微信小程序的appid
-    secret: 74503209c15e5ef2d0ac3b36f1482bf0 #微信小程序的Secret
-    token: fzxt2020wx #微信小程序消息服务器配置的token
-    aesKey: NWpIzKGJ5LwDSTPNaEFMrgVvDTwDJ22kTUPQMuVJlCB #微信小程序消息服务器配置的EncodingAESKey
-    msgDataFormat: JSON
