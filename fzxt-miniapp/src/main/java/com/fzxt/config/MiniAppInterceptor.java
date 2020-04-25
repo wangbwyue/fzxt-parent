@@ -37,6 +37,7 @@ public class MiniAppInterceptor extends HandlerInterceptorAdapter {
                 returnJson(response,Result.resultErr(StatusCode.ACCESSERROR));
                 return false;
             }
+
         } else{
             returnJson(response,Result.resultErr(StatusCode.ACCESSERROR));
             return false;
