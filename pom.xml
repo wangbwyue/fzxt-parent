@@ -26,7 +26,7 @@
         <java.version>1.8</java.version>
         <mybatis-spring-boot-starter.version>1.3.2</mybatis-spring-boot-starter.version>
         <lombok.version>1.16.20</lombok.version>
-        <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
+        <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
         <start-class>com.fzxt.AdminApplication</start-class>
     </properties>
 
